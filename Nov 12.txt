@@ -1,0 +1,161 @@
+App.component.ts
+
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'FormsPractice';
+
+  constructor(private route:Router){
+    this.route.navigate(['/edit']);
+
+  }
+ 
+  
+}
+
+App-routing.module.ts
+
+import { Component, NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+import { EditEmpTemplateDrivenComponent } from './edit-emp-template-driven/edit-emp-template-driven.component';
+
+const routes: Routes = [
+  {path:"edit",component: EditEmpTemplateDrivenComponent}
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+
+employee.ts
+
+export interface Employee extends Department{
+    id:number;
+    name:string;
+    salary:number;
+    skills:skill[];
+    permenamt:string;
+    DateOfBirth:Date;
+
+}
+
+Department.ts
+
+ 
+
+    export interface Department  {
+        deptId:number;
+        deptName:string;
+        
+    }
+
+Skill.ts
+
+export interface skill{
+    skill_id:number;
+    skill_name:string;
+}
+
+edit-emp-template-driven.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Employee } from '../Employee';
+
+@Component({
+  selector: 'app-edit-emp-template-driven',
+  templateUrl: './edit-emp-template-driven.component.html',
+  styleUrls: ['./edit-emp-template-driven.component.css']
+})
+export class EditEmpTemplateDrivenComponent implements OnInit {
+ 
+  
+  constructor(private route:Router) {
+    
+   }
+ 
+  ngOnInit(): void {
+  }
+  empl:Employee={
+    id:1
+    ,name:'renu',
+    salary:50000,  
+    deptId:10,
+    deptName:"hr",
+   
+   
+    skills:[{skill_id:22,skill_name:"HTML"},
+    {skill_id:23,skill_name:"CSS"},
+    {skill_id:24,skill_name:"JAVASCRIPT"}],
+    permenamt:"yes",
+    DateOfBirth : new Date() 
+};
+submitted = false;
+  onSubmit() {
+    console.log("clicked");
+    this.submitted = true;
+    if(this.submitted==true){
+    this.route.navigate(['/']);
+    }
+  }
+}
+
+edit-emp-template-driven.component.html
+
+
+<div class="container-fluid">
+    <h1>Edit Employee</h1>
+    <form #empForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="form-control" required name="name" [(ngModel)]="empl.name" #name="ngModel" 
+            [class.is-invalid]="name.invalid && name.touched && name.dirty" minlength="2" maxlength="10">
+            <div *ngIf="name.errors && (name.invalid || name.touched || name.dirty)">
+                <small class="text-danger" *ngIf="name.errors.required">Name is required</small>      
+                <small class="text-danger" *ngIf="name.errors.minlength">Name must be atleast 2 charachters long</small>  
+                <small class="text-danger" *ngIf="name.errors.maxlength">Name must not contain more than 10 charachters</small>    
+              </div>
+              <div class="form-group">
+                <label>Salary</label>
+                <input type="text" class="form-control" required name="salary" [(ngModel)]="empl.salary" #name="ngModel" ></div></div>
+            
+            <!-- {{empl.name}}
+        </div>
+        <div>name.invalid - {{name.invalid}}</div>
+<div>name.touched - {{name.touched}}</div>
+<div>name.dirty - {{name.dirty}}</div>
+<div>name.errors.required - {{name.errors?.required}}</div>
+<div>name.errors.minlength - {{name.errors?.minlength | json}}</div>
+    </form>
+</div> -->
+<div class="mb-3">
+    <label>Is Permanant or not??</label>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="permenamt" value="yes" [(ngModel)]="empl.permenamt" ngModel>
+        <label class="form-check-label">Yes</label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="permenamt" value="no" [(ngModel)]="empl.permenamt" ngModel>
+        <label class="form-check-label">No</label>
+    </div>
+</div>
+<button type="submit" [disabled]="!empForm.valid">Save</button>
+</form>
+<div class="block">
+    <strong>Employee Model</strong><br>
+    <pre>{{empl | json }}</pre>
+</div>
+<div class="block">
+    <strong>Angular Generated Form Model</strong><br>
+    <pre>{{empForm.value | json}}</pre>
+</div>
+
+
